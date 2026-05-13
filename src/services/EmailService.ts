@@ -1,3 +1,4 @@
+import { info } from "console";
 import nodemailer from "nodemailer";
 
 
@@ -9,6 +10,8 @@ export class EmailService{
         nome:string
     ) {
         try {
+            console.log(process.env.EMAIL_USER);
+            console.log(process.env.EMAIL_PASS);
             const transporter = nodemailer.createTransport({
             service: 'gmail',
 
@@ -28,6 +31,8 @@ export class EmailService{
                 <h2>Está aqui seu código de verificação é: <strong>${codigo}</strong></h2>
             `
         });
+        console.log("EMAIL ENVIADO");
+        console.log(info);
         } catch (error){
             console.error(error);
             throw new Error("Erro ao enviar email de verificação");

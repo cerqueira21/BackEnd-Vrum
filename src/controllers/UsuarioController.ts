@@ -11,8 +11,8 @@ export class UsuarioController {
             nome,
             cpf,
             email,
-            senha,
-            telefone
+            senha_hash: req.body.senha,
+            tel_user: req.body.telefone
         });
         return res.status(201).json(usuario);
     }
