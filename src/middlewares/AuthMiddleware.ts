@@ -1,7 +1,5 @@
-import {request, response, NextFunction} from 'express';
+import {Request, Response, NextFunction} from 'express';
 import jwt from 'jsonwebtoken';
-import { error } from 'node:console';
-import { id } from 'zod/locales';
 
 interface TokenPayLoad{
     id: number;
@@ -23,6 +21,11 @@ export function authMiddleware(
     }
 
     const [, token] = authHeader.split(' ');
+    if(!token){
+        return res.status(401).json({
+            error: 'Token não fornecido'
+        });
+    }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
 

@@ -17,9 +17,11 @@ export class LoginService {
             }
         });
 
+
         if(!usuario){
             throw new Error("Usuário não encontrado");
         }
+
 
         const senhaValida = await bcrypt.compare(data.senha, usuario.senha_hash);
 
@@ -31,9 +33,18 @@ export class LoginService {
             throw new Error("Conta não verificada");
         }
 
+        const motorista = await prisma.motoristas.findFirst({
+            where:{
+                user_id: usuario.user_id
+            }
+        });
+
+        const tipo = motorista ? "motorista" : "responsavel";
+
         const token = jwt.sign({
             id: usuario.user_id,
-            email: usuario.email
+            email: usuario.email,
+            tipo
             },
             process.env.JWT_SECRET as string,
             {
@@ -46,6 +57,7 @@ export class LoginService {
                 nome: usuario.nome,
                 email: usuario.email,
             },
+            tipo,
             token
         };
     }

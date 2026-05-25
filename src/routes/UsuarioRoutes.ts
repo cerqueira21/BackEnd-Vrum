@@ -4,6 +4,9 @@ import { UsuarioService } from"../services/UsuarioService";
 import { ConfirmacaoService } from "../services/CofirmacaoService";
 import { ReenviarCodigoService } from "../services/ReenviarCodigo";
 import { LoginService } from "../services/LoginService";
+import { authMiddleware } from "../middlewares/AuthMiddleware";
+import { RecuperaSenhaService } from "../services/RecuperaSenhaService";
+
 
 const router = Router(); //criando uma instancia do Router, ou seja, um organizador de rotas
 
@@ -12,7 +15,7 @@ const usuarioService = new UsuarioService();
 const confirmacaoService = new ConfirmacaoService();
 const reenviarCodigoService = new ReenviarCodigoService();
 const loginService = new LoginService();
-
+const recuperaSenhaService = new RecuperaSenhaService();
 //cadastro
 router.post("/cadastro", async (req, res) => {
     try{
@@ -61,5 +64,39 @@ router.post("/login", async(req, res) => {
         return res.status(400).json({error: error.message});
     }
 });
+
+router.get(
+    "/perfil",
+    authMiddleware,
+    async(req, res) => {
+
+        return res.json({
+            message: "Rota protegida funcionando",
+            usuario: req.user
+        });
+    }
+);
+
+router.post("/recuperarSenha", async(req, res) => {
+    try{
+        const {email} = req.body;
+        const result = await recuperaSenhaService.solicitarRecuperacao({email});
+
+        return res.json(result);
+    }catch(error:any){
+        return res.status(400).json({error: error.message});
+    }
+});
+
+router.post("/redefinirSenha", async(req, res) => {
+    try{
+        const result = await recuperaSenhaService.redefinirSenha(req.body);
+        return res.json(result);
+    }catch(error:any){
+        return res.status(400).json({error: error.message});
+    }
+});
+
+
 
 export { router as usuarioRoutes };
